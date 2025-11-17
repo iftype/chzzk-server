@@ -1,4 +1,4 @@
-import LiveLogRequestDto from "../dtos/request/LiveRequestDto.js";
+import LiveLogRequestDto from "../dtos/request/LiveLogRequestDto.js";
 import LiveLogError from "../errors/LiveLogError.js";
 
 class LiveLogController {

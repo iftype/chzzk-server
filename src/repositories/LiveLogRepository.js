@@ -1,58 +1,63 @@
 export default class LiveLogRepository {
-  cache;
   pool;
 
   constructor(pool) {
     this.pool = pool;
-    this.cache = new Map();
   }
 
-  async save(channel) {
-    console.log("save실행");
-    const { channelId, liveTitle, openDate, closeDate, liveCategoryValue } = channel.toDbData();
-    if (this.cache.get(channelId) === liveCategoryValue) {
-      console.log("카테고리 안바뀜");
-      return true;
-    }
-    const sql = `INSERT INTO CHZZK_LOGS (channel_id, live_title, open_date, close_date, live_category_value)
-    VALUES ($1, $2, $3, $4, $5)`;
+  // 완성
+  async save({ channelId, liveTitle, openDate, closeDate, categoryId }) {
+    const sql = `
+    INSERT INTO CHZZK_LOGS (channel_id, live_title, open_date, close_date, live_category_id)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id;
+    `;
 
-    const binds = [channelId, liveTitle, openDate, closeDate, liveCategoryValue];
-
+    const binds = [channelId, liveTitle, openDate, closeDate, categoryId];
     try {
-      const result = await this.pool.query(sql, binds);
-      if (result.rowCount > 0) {
-        console.log(`[ChannelRepository] 저장 성공 ${channelId})`);
-        this.cache.set(channelId, liveCategoryValue);
-      }
-      return true;
+      const res = await this.pool.query(sql, binds);
+      return res.rows[0];
     } catch (err) {
-      console.error("[ChannelRepository] 저장 실패", err.message);
-      return false;
+      console.error("[LiveLogRepository] 저장 실패", err.message);
+      return null;
     }
   }
 
   // 방송 종료시 방송종료 필드 업데이트
-  async updateCloseDate(channelId, closeDate) {
+  async updateCloseDate({ channelPK, closeDate, openDate }) {
     const sql = `
-      UPDATE CHZZK_LOGS
-      SET close_date = $1
-      WHERE channel_id = $2
+        UPDATE CHZZK_LOGS
+        SET close_date = $1
+        WHERE channel_id = $2
+          AND open_date = $3
+          AND close_date IS NULL
+        RETURNING id;
     `;
-    const binds = [closeDate, channelId];
-
+    const binds = [closeDate, channelPK, openDate];
     try {
-      const result = await this.pool.query(sql, binds);
-      if (result.rowCount > 0) {
-        console.log(`[ChannelRepository] close_date 업데이트 성공 ${channelId}`);
-        return true;
-      } else {
-        console.log(`[ChannelRepository] 해당 채널 없음 ${channelId}`);
-        return false;
-      }
+      const res = await this.pool.query(sql, binds);
+      return (await res.rows[0]) || null;
     } catch (err) {
-      console.error("[ChannelRepository] close_date 업데이트 실패", err.message);
-      return false;
+      return null;
+    }
+  }
+
+  // 풀링에서 쓰는 거 / 현재 방송 중인 가장 최근 값 가져옴
+  async findLastLiveBroadcast({ channelId }) {
+    const sql = `
+    SELECT *
+    FROM CHZZK_LOGS
+    WHERE channel_id = $1
+      AND close_date IS NULL
+    ORDER BY open_date DESC
+    LIMIT 1
+  `;
+    try {
+      const res = await this.pool.query(sql, [channelId]);
+      return res.rows[0];
+    } catch (err) {
+      console.error("[ChannelRepository] findLastLiveBroadcast 실패:", err.message);
+      return null;
     }
   }
 
@@ -73,26 +78,6 @@ export default class LiveLogRepository {
     } catch (err) {
       console.error("[ChannelRepository] findByChannelAndDate 실패:", err.message);
       return [];
-    }
-  }
-
-  // 현재 방송 중
-  async findLastLiveBroadcast(channelId) {
-    const sql = `
-    SELECT *
-    FROM CHZZK_LOGS
-    WHERE channel_id = $1
-      AND close_date IS NULL
-    ORDER BY open_date DESC
-    LIMIT 1
-  `;
-
-    try {
-      const result = await this.pool.query(sql, [channelId]);
-      return result.rows[0] || null;
-    } catch (err) {
-      console.error("[ChannelRepository] findLastLiveBroadcast 실패:", err.message);
-      return null;
     }
   }
 
