@@ -22,8 +22,7 @@ class PostgreDB {
       return this.getPool();
     } catch (err) {
       console.error(err.message);
-      this.pool = null;
-      return null;
+      throw new Error("데이터베이스 초기 연결에 실패했습니다.");
     }
   }
 
@@ -51,36 +50,41 @@ class PostgreDB {
         CREATE TABLE IF NOT EXISTS CHZZK_CATEGORIES (
           id SERIAL PRIMARY KEY,
           value VARCHAR(100) UNIQUE NOT NULL,
-          name VARCHAR(100) NOT NULL
+          name VARCHAR(100) NOT NULL,
+          type VARCHAR(100) NOT NULL,
+          image_url TEXT
         );
       `);
 
-      // 3. CHZZK_LOGS
+      // 3. VIDEOS
       await this.pool.query(`
-        CREATE TABLE IF NOT EXISTS CHZZK_LOGS (
-          id SERIAL PRIMARY KEY,
-          channel_id INT REFERENCES CHZZK_CHANNELS(id),
-          live_title TEXT,
-          open_date TIMESTAMP WITH TIME ZONE,
-          close_date TIMESTAMP WITH TIME ZONE,
-          live_category_value INT REFERENCES CHZZK_CATEGORIES(id),
-          log_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        );
-      `);
-
-      // 4. VIDEOS
-      await this.pool.query(`
-        CREATE TABLE IF NOT EXISTS VIDEOS (
+        CREATE TABLE IF NOT EXISTS CHZZK_VIDEOS (
           id SERIAL PRIMARY KEY,
           video_id VARCHAR(100) NOT NULL UNIQUE,
           title TEXT,
-          channel_id VARCHAR(100) NOT NULL REFERENCES CHZZK_CHANNELS(channel_id),
+          channel_id INT REFERENCES CHZZK_CHANNELS(id),
           publish_date TIMESTAMP WITH TIME ZONE,
           thumbnail_url TEXT,
           duration INT,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
       `);
+
+      // 4. CHZZK_LOGS
+      await this.pool.query(`
+        CREATE TABLE IF NOT EXISTS CHZZK_LOGS (
+          id SERIAL PRIMARY KEY,
+          broadcast_session_id VARCHAR(50) NOT NULL,
+          channel_id INT REFERENCES CHZZK_CHANNELS(id),
+          live_title TEXT,
+          open_date TIMESTAMP WITH TIME ZONE,
+          close_date TIMESTAMP WITH TIME ZONE,
+          live_category_id INT REFERENCES CHZZK_CATEGORIES(id),
+          video_id INT REFERENCES CHZZK_VIDEOS(id),
+          log_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
       console.log("[DB] Tables created or verified successfully.");
     } catch (err) {
       console.error("[DB Error] Table creation failed:", err.message);
