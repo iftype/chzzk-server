@@ -14,6 +14,7 @@ class PollingScheduler {
     await this.initializeCache();
     Object.values(CHANNELS).forEach((channelId) => this.scheduleChannels(channelId));
     Object.values(CHANNELS).forEach((channelId) => this.scheduleLiveLogs(channelId));
+    Object.values(CHANNELS).forEach((channelId) => this.scheduleVieo(channelId));
   }
 
   async initializeCache() {
@@ -47,6 +48,21 @@ class PollingScheduler {
 
     try {
       const { interval } = await this.#processor.processPollingLiveLog(channelId);
+      nextInterval = interval;
+    } catch (err) {
+      console.error(`[LiveLog Polling] Error on ${channelId}:`, err.message);
+      const { interval } = PollingPolicy.getDefaultInterval();
+      nextInterval = interval;
+    }
+    this.#scheduleNext(timerKey, nextInterval, this.scheduleLiveLogs.bind(this, channelId));
+  }
+
+  async scheduleVieo(channelId) {
+    let nextInterval;
+    let timerKey = `video_${channelId}`;
+
+    try {
+      const { interval } = await this.#processor.processPollingVideo(channelId);
       nextInterval = interval;
     } catch (err) {
       console.error(`[LiveLog Polling] Error on ${channelId}:`, err.message);
