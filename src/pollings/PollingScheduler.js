@@ -12,9 +12,11 @@ class PollingScheduler {
 
   async run() {
     await this.initializeCache();
-    Object.values(CHANNELS).forEach((channelId) => this.scheduleChannels(channelId));
-    Object.values(CHANNELS).forEach((channelId) => this.scheduleLiveLogs(channelId));
-    Object.values(CHANNELS).forEach((channelId) => this.scheduleVieo(channelId));
+    for (const channelId of Object.values(CHANNELS)) {
+      this.scheduleChannels(channelId);
+      this.scheduleLiveLogs(channelId);
+      this.scheduleVideoMatch(channelId);
+    }
   }
 
   async initializeCache() {
@@ -22,54 +24,44 @@ class PollingScheduler {
     for (const channelId of channelIds) {
       await this.#processor.processPollingChannel(channelId);
     }
-    for (const channelId of channelIds) {
-      await this.#processor.initializeCache(channelId);
-    }
   }
 
   async scheduleChannels(channelId) {
-    let nextInterval;
-    let timerKey = `channel_${channelId}`;
-
-    try {
-      const { interval } = await this.#processor.processPollingChannel(channelId);
-      nextInterval = interval;
-    } catch (err) {
-      console.error(`[Channel Polling] Error on ${channelId}:`, err.message);
-      const { interval } = PollingPolicy.getDefaultInterval();
-      nextInterval = interval;
-    }
-    this.#scheduleNext(timerKey, nextInterval, this.scheduleChannels.bind(this, channelId));
+    await this.#schedulePolling(
+      "channel",
+      channelId,
+      "processPollingChannel",
+      this.scheduleChannels
+    );
   }
 
   async scheduleLiveLogs(channelId) {
-    let nextInterval;
-    let timerKey = `live_${channelId}`;
-
-    try {
-      const { interval } = await this.#processor.processPollingLiveLog(channelId);
-      nextInterval = interval;
-    } catch (err) {
-      console.error(`[LiveLog Polling] Error on ${channelId}:`, err.message);
-      const { interval } = PollingPolicy.getDefaultInterval();
-      nextInterval = interval;
-    }
-    this.#scheduleNext(timerKey, nextInterval, this.scheduleLiveLogs.bind(this, channelId));
+    await this.#schedulePolling("live", channelId, "processPollingLiveLog", this.scheduleLiveLogs);
   }
 
-  async scheduleVieo(channelId) {
+  async scheduleVideoMatch(channelId) {
+    await this.#schedulePolling(
+      "video",
+      channelId,
+      "processPollingVideoMatch",
+      this.scheduleVideoMatch
+    );
+  }
+
+  async #schedulePolling(type, channelId, processorMethod, scheduleMethod) {
     let nextInterval;
-    let timerKey = `video_${channelId}`;
+    const timerKey = `${type}_${channelId}`;
+    const logPrefix = `[${type} Polling]`;
 
     try {
-      const { interval } = await this.#processor.processPollingVideo(channelId);
+      const { interval } = await this.#processor[processorMethod](channelId);
       nextInterval = interval;
     } catch (err) {
-      console.error(`[LiveLog Polling] Error on ${channelId}:`, err.message);
+      console.error(`${logPrefix} Error on ${channelId}:`, err.message);
       const { interval } = PollingPolicy.getDefaultInterval();
       nextInterval = interval;
     }
-    this.#scheduleNext(timerKey, nextInterval, this.scheduleLiveLogs.bind(this, channelId));
+    this.#scheduleNext(timerKey, nextInterval, scheduleMethod.bind(this, channelId));
   }
 
   #scheduleNext(timerKey, interval, fn) {
