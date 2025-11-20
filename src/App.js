@@ -15,6 +15,7 @@ import PollingScheduler from "./pollings/PollingScheduler.js";
 import CategoryRepository from "./repositories/CategoryRepository.js";
 import VideoService from "./services/VideoService.js";
 import VideoRepository from "./repositories/VideoRepository.js";
+import VideoMatchingService from "./services/VideoMatchingService.js";
 
 class App {
   app;
@@ -99,6 +100,10 @@ class App {
       videoService,
       liveLogRepository,
     });
+    const videoMatchingService = new VideoMatchingService({
+      liveLogService,
+      videoService,
+    });
 
     this.liveLogController = new LiveLogController({ liveLogService });
     this.channelController = new ChannelController({ channelService });
@@ -106,8 +111,7 @@ class App {
     const processor = new PollingProcessor({
       liveLogService,
       channelService,
-      categoryService,
-      videoService,
+      videoMatchingService,
     });
     this.pollingSchedulerInstance = new PollingScheduler({ processor });
   }

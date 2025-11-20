@@ -26,8 +26,7 @@ class PollingProcessor {
     try {
       await this.#liveLogService.initializeCache(channelId);
 
-      const data = await this.#liveLogService.processLiveLog(channelId);
-      const { isLive, closeDate } = data;
+      const { isLive, closeDate } = await this.#liveLogService.processLiveLog(channelId);
       if (isLive) {
         return PollingPolicy.getOpenInterval();
       }

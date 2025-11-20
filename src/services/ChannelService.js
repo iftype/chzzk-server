@@ -1,5 +1,5 @@
 import getChzzkApiResponse from "../api/chzzk-Api.js";
-import ApiChannelDTO from "../dtos/response/ApiChannelDTO.js";
+import ApiChannelDTO from "../dtos/api/ApiChannelDTO.js";
 import Channel from "../models/Channel.js";
 
 class ChannelService {

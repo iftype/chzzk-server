@@ -1,5 +1,5 @@
 import getChzzkApiResponse from "../api/chzzk-Api.js";
-import ApiCategoryDTO from "../dtos/response/ApiCategoryDTO.js";
+import ApiCategoryDTO from "../dtos/api/ApiCategoryDTO.js";
 import Category from "../models/Category.js";
 
 class CategoryService {

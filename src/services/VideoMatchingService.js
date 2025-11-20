@@ -20,9 +20,6 @@ class VideoMatchingService {
     const { live_title, close_date, broadcast_session_id } = lastLog.toVideoMatch();
     const { videoTitle, publishDate } = videoDto.toDomainFields();
 
-    console.log(live_title, close_date, broadcast_session_id);
-    console.log(videoTitle, publishDate);
-
     const matchedTitle = live_title === videoTitle;
     const matchedDate =
       new Date(publishDate).getTime() - new Date(close_date).getTime() <

@@ -1,6 +1,6 @@
 import getChzzkApiResponse from "../api/chzzk-Api.js";
 import Video from "../models/Video.js";
-import ApiVideoDTO from "../dtos/response/ApiVideoDTO.js";
+import ApiVideoDTO from "../dtos/api/ApiVideoDTO.js";
 
 class VideoService {
   #API_BASE_URL;

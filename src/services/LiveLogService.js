@@ -1,5 +1,5 @@
 import LiveLog from "../models/LiveLog.js";
-import ApiLiveLogDTO from "../dtos/response/ApiLiveLogDTO.js";
+import ApiLiveLogDTO from "../dtos/api/ApiLiveLogDTO.js";
 import getChzzkApiResponse from "../api/chzzk-Api.js";
 import { generateSessionId } from "../utils/session.js";
 
