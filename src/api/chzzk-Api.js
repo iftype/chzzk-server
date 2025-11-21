@@ -1,5 +1,6 @@
 import axios from "axios";
 import CHANNEL_MOCK_DATA from "../mock/channelMockData.js";
+import LIVELOG_MOCK_DATA from "../mock/liveLogMockData.js";
 
 async function getChzzkApiResponse(apiUrl) {
   try {
@@ -8,8 +9,8 @@ async function getChzzkApiResponse(apiUrl) {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
       },
     });
-    console.log("💥API호출완료");
     // return CHANNEL_MOCK_DATA.content;
+    // return LIVELOG_MOCK_DATA.content;
     return response.data.content;
   } catch (error) {
     console.error("API 호출 오류:", error.message);

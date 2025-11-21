@@ -11,8 +11,8 @@ class VideoMatchingService {
 
   async matchAndSave(channelId) {
     const videoDto = await this.#videoService.getVideoFromApi(channelId);
-
     const lastLog = await this.#liveLogService.findLastLogByChannelId(channelId);
+
     if (!videoDto || !lastLog) {
       return { matched: false };
     }
@@ -25,6 +25,7 @@ class VideoMatchingService {
       new Date(publishDate).getTime() - new Date(close_date).getTime() <
       VideoMatchingService.VIEDO_MATCH_STAND;
 
+    console.log(live_title, close_date);
     if (!matchedTitle && !matchedDate) {
       return { matched: false };
     }

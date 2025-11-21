@@ -2,20 +2,20 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 
-import LiveLogService from "./services/LiveLogService.js";
-import LiveLogController from "./controllers/LiveLogController.js";
-import LiveLogRepository from "./repositories/LiveLogRepository.js";
 import PostgreDB from "./config/postgreDB.js";
-import ChannelController from "./controllers/ChannelController.js";
-import ChannelService from "./services/ChannelService.js";
-import ChannelRepository from "./repositories/ChannelRepository.js";
 import PollingProcessor from "./pollings/PollingProcessor.js";
-import CategoryService from "./services/CategoryService.js";
 import PollingScheduler from "./pollings/PollingScheduler.js";
-import CategoryRepository from "./repositories/CategoryRepository.js";
+import ChannelController from "./controllers/ChannelController.js";
+import LiveLogController from "./controllers/LiveLogController.js";
+import CategoryService from "./services/CategoryService.js";
+import LiveLogService from "./services/LiveLogService.js";
+import ChannelService from "./services/ChannelService.js";
 import VideoService from "./services/VideoService.js";
-import VideoRepository from "./repositories/VideoRepository.js";
 import VideoMatchingService from "./services/VideoMatchingService.js";
+import LiveLogRepository from "./repositories/LiveLogRepository.js";
+import ChannelRepository from "./repositories/ChannelRepository.js";
+import CategoryRepository from "./repositories/CategoryRepository.js";
+import VideoRepository from "./repositories/VideoRepository.js";
 
 class App {
   app;
@@ -37,36 +37,36 @@ class App {
   }
 
   #initializeRoutes() {
-    // 특정 스트리머 채널 정보 가져오기
+    // 채널 전부 가져오기
     this.app.get("/channel", this.channelController.getChannelAllData.bind(this.channelController));
-    // 특정 스트리머 채널 정보 가져오기
+
+    // 특정 채널 정보 가져오기
     this.app.get(
       "/channel/:channelName",
       this.channelController.getChannelData.bind(this.channelController)
     );
 
-    // // 특정 스트리머 라이브 데이터 전부 가져오기
-    // this.app.get(
-    //   "/live/:channelName",
-    //   this.liveLogController.getLiveLogAllData.bind(this.liveLogController)
-    // );
+    // 특정 스트리머 기록 데이터 전부 가져오기
+    this.app.get(
+      "/log/:channelName",
+      this.liveLogController.getLiveLogs.bind(this.liveLogController)
+    );
 
-    // // 특정 스트리머 라이브 가져오기
+    // 특정 스트리머 라이브 가져오기
     // this.app.get(
     //   "/live/:channelName/live",
     //   this.liveLogController.getLastLiveBroadcast.bind(this.liveLogController)
     // );
 
-    // // 특정 스트리머 마지막 방송 가져오기
+    // // // 특정 스트리머 마지막 방송 가져오기
     // this.app.get("/channels/:channelId/last-ended", this.controller.getLastEndedBroadcast);
+
     // // 특정 스트리머의 카테고리들 가져오기
     // this.app.get("/channels/:channelId/categories", this.controller.getCategories);
     // // 특정 스트리머의 카테고리 리스트 가져오기
     // this.app.get("/channels/:channelId/category/:categoryValue", this.controller.getCategoryLogs);
     // // 특정 스트리머의 방송한 날짜 전부 가져오기
     // this.app.get("/channels/:channelId/date", this.controller.getDateLogs);
-    // // 특정 스트리머의 날짜로 가져오기
-    // this.app.get("/channels/:channelId/date/:date", this.controller.getDateLogs);
 
     this.app.get("/", (req, res) => {
       res.send("서버 구동 중");
@@ -93,13 +93,12 @@ class App {
 
     const channelService = new ChannelService({ channelRepository });
     const categoryService = new CategoryService({ categoryRepository });
-    const videoService = new VideoService({ channelService, videoRepository });
     const liveLogService = new LiveLogService({
       channelService,
       categoryService,
-      videoService,
       liveLogRepository,
     });
+    const videoService = new VideoService({ channelService, videoRepository });
     const videoMatchingService = new VideoMatchingService({
       liveLogService,
       videoService,
@@ -122,7 +121,7 @@ class App {
     this.#initializeRoutes();
     this.#initializeErrorHandler();
 
-    this.pollingSchedulerInstance.run();
+    // this.pollingSchedulerInstance.run();
 
     this.app.listen(this.PORT, () => {
       console.log(`Server running http://localhost:${this.PORT}`);
