@@ -70,5 +70,18 @@ class LiveLog {
       close_date: this.#closeDate,
     };
   }
+
+  toResponse() {
+    return {
+      liveLogPK: this.#liveLogPK,
+      liveSessionId: this.#liveSessionId,
+      channelPK: this.#channelPK,
+      categoryPK: this.#categoryPK,
+      videoPK: this.#videoPK,
+      liveTitle: this.#liveTitle,
+      openDate: this.#openDate,
+      closeDate: this.#closeDate,
+    };
+  }
 }
 export default LiveLog;

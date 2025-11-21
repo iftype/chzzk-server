@@ -2,6 +2,7 @@ import LiveLog from "../models/LiveLog.js";
 import ApiLiveLogDTO from "../dtos/api/ApiLiveLogDTO.js";
 import getChzzkApiResponse from "../api/chzzk-Api.js";
 import { generateSessionId } from "../utils/session.js";
+import LiveLogDetailResponseDto from "../dtos/response/LiveLogDetailResponseDto.js";
 
 class LiveLogService {
   #API_BASE_URL = process.env.API_BASE_URL;
@@ -10,7 +11,7 @@ class LiveLogService {
   #categoryService;
   #liveLogCache;
 
-  constructor({ channelService, categoryService, videoService, liveLogRepository }) {
+  constructor({ channelService, categoryService, liveLogRepository }) {
     this.#channelService = channelService;
     this.#categoryService = categoryService;
     this.#liveLogRepository = liveLogRepository;
@@ -44,7 +45,11 @@ class LiveLogService {
 
     // 방송 종료일 때 처리
     if (!isLive && cachedLog) {
-      await this.#liveLogRepository.updateSessionCloseDate(cachedLog.liveSessionId, closeDate);
+      const { liveSessionId } = cachedLog;
+      await this.#liveLogRepository.updateSessionCloseDate({
+        liveSessionId,
+        closeDate,
+      });
       this.#liveLogCache.set(channelId, null); // 캐시 클리어
       return { isLive, closeDate };
     }
@@ -106,6 +111,19 @@ class LiveLogService {
       liveSessionId: sessionId,
       videoPK,
     });
+  }
+
+  async resposeLiveLog({ streamerId }) {
+    // const liveLogModel = await this.#liveLogRepository.()
+  }
+
+  async resposeLiveLogDetailByDate({ streamerId, date }) {
+    const { channelPK } = await this.#channelService.getChannelPK(streamerId);
+    const logDetailList = await this.#liveLogRepository.findLogDetailListByDate({
+      channelPK,
+      date,
+    });
+    return logDetailList.map((log) => new LiveLogDetailResponseDto(log));
   }
 }
 

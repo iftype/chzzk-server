@@ -1,4 +1,5 @@
 import LiveLog from "../models/LiveLog.js";
+import LiveLogDetail from "../models/LiveLogDetail.js";
 
 export default class LiveLogRepository {
   pool;
@@ -57,7 +58,7 @@ export default class LiveLogRepository {
             SELECT *
             FROM CHZZK_LIVE_LOGS
             WHERE channel_pk = $1
-              AND live_close_date IS NULL
+              AND video_pk IS NULL
             ORDER BY live_open_date DESC
             LIMIT 1
         `;
@@ -139,64 +140,53 @@ export default class LiveLogRepository {
     }
   }
 
-  async findByChannelAndCategory(channelPK, categoryPK) {
+  async findLogDetailListByDate({ channelPK, date }) {
     const sql = `
-            SELECT *
-            FROM CHZZK_LIVE_LOGS
-            WHERE channel_pk = $1
-              AND category_pk = $2
-            ORDER BY live_open_date DESC
-        `;
-    const binds = [channelPK, categoryPK];
+    SELECT
+        L.id AS live_log_pk,
+        L.live_session_id,
+        L.live_title,
+        L.live_open_date,
+        L.live_close_date,
+        L.log_time,
 
+        C.id AS channel_pk,
+        C.channel_id AS streamer_id,
+        C.channel_name,
+        C.channel_image_url,
+
+        V.id AS video_pk,
+        V.video_id,
+        V.video_title,
+        V.video_thumbnail_url,
+        V.video_duration,
+
+        G.id AS category_pk,
+        G.category_id,
+        G.category_value,
+        G.category_type
+    FROM
+        CHZZK_LIVE_LOGS L
+    INNER JOIN CHZZK_CHANNELS C ON L.channel_pk = C.id
+    INNER JOIN CHZZK_VIDEOS V ON L.video_pk = V.id
+    INNER JOIN CHZZK_CATEGORIES G ON L.category_pk = G.id
+    WHERE
+        L.channel_pk = $1
+    AND DATE(L.live_open_date) = $2
+    ORDER BY
+        L.log_time ASC;
+    `;
+    const binds = [channelPK, date];
     try {
       const result = await this.pool.query(sql, binds);
-      return result.rows.map((row) => LiveLog.fromDBRow(row));
+      return result.rows.map((row) => LiveLogDetail.fromDBRow(row));
     } catch (err) {
-      console.error("[LiveLogRepository] findByChannelAndCategory 실패:", err.message);
+      console.error("[LiveLogRepository] findLogDetailListByDate 실패:", err.message);
       return [];
     }
   }
 
-  async findCategoryPKList(channelPK) {
-    const sql = `
-            SELECT DISTINCT category_pk
-            FROM CHZZK_LIVE_LOGS
-            WHERE channel_pk = $1
-              AND category_pk IS NOT NULL
-            ORDER BY category_pk ASC
-        `;
-    const binds = [channelPK];
-
-    try {
-      const result = await this.pool.query(sql, binds);
-      // PK(숫자)만 배열로 반환
-      return result.rows.map((row) => row.category_pk);
-    } catch (err) {
-      console.error("[LiveLogRepository] findCategoryPKList 실패:", err.message);
-      return [];
-    }
-  }
-
-  async findAllByChannel(channelPK) {
-    const sql = `
-            SELECT *
-            FROM CHZZK_LIVE_LOGS
-            WHERE channel_pk = $1
-            ORDER BY live_open_date DESC
-        `;
-    const binds = [channelPK];
-
-    try {
-      const result = await this.pool.query(sql, binds);
-      return result.rows.map((row) => LiveLog.fromDBRow(row));
-    } catch (err) {
-      console.error("[LiveLogRepository] findAllByChannel 실패:", err.message);
-      return [];
-    }
-  }
-
-  async findBroadcastDates(channelPK) {
+  async findLiveDates(channelPK) {
     const sql = `
             SELECT DISTINCT DATE(live_open_date) AS broadcast_date
             FROM CHZZK_LIVE_LOGS
@@ -214,7 +204,7 @@ export default class LiveLogRepository {
     }
   }
 
-  async findLastBroadcastDates(channelPK, limit = 10) {
+  async findLastLogDates(channelPK, limit = 10) {
     const sql = `
             SELECT DISTINCT DATE(live_open_date) AS broadcast_date
             FROM CHZZK_LIVE_LOGS
