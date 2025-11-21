@@ -3,6 +3,7 @@ import ApiLiveLogDTO from "../dtos/api/ApiLiveLogDTO.js";
 import getChzzkApiResponse from "../api/chzzk-Api.js";
 import { generateSessionId } from "../utils/session.js";
 import LiveLogDetailResponseDto from "../dtos/response/LiveLogDetailResponseDto.js";
+import LiveLogRequestDto from "../dtos/request/LiveLogRequestDto.js";
 
 class LiveLogService {
   #API_BASE_URL = process.env.API_BASE_URL;
@@ -114,7 +115,11 @@ class LiveLogService {
   }
 
   async resposeLiveLog({ streamerId }) {
-    // const liveLogModel = await this.#liveLogRepository.()
+    const { channelPK } = await this.#channelService.getChannelPK(streamerId);
+    const logDetailList = await this.#liveLogRepository.findLogByPK({
+      channelPK,
+    });
+    return logDetailList.map((log) => new LiveLogDetailResponseDto(log));
   }
 
   async resposeLiveLogDetailByDate({ streamerId, date }) {

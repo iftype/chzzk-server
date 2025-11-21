@@ -186,6 +186,49 @@ export default class LiveLogRepository {
     }
   }
 
+  async findLogByPK({ channelPK }) {
+    const sql = `
+    SELECT
+        L.id AS live_log_pk,
+        L.live_session_id,
+        L.live_title,
+        L.live_open_date,
+        L.live_close_date,
+        L.log_time,
+
+        C.id AS channel_pk,
+        C.channel_id AS streamer_id,
+        C.channel_name,
+        C.channel_image_url,
+
+        V.id AS video_pk,
+        V.video_id,
+        V.video_title,
+        V.video_thumbnail_url,
+        V.video_duration,
+
+        G.id AS category_pk,
+        G.category_id,
+        G.category_value,
+        G.category_type
+    FROM
+        CHZZK_LIVE_LOGS L
+    INNER JOIN CHZZK_CHANNELS C ON L.channel_pk = C.id
+    INNER JOIN CHZZK_VIDEOS V ON L.video_pk = V.id
+    INNER JOIN CHZZK_CATEGORIES G ON L.category_pk = G.id
+    WHERE
+        L.channel_pk = $1
+    `;
+    const binds = [channelPK];
+    try {
+      const result = await this.pool.query(sql, binds);
+      return result.rows.map((row) => LiveLogDetail.fromDBRow(row));
+    } catch (err) {
+      console.error("[LiveLogRepository] findLogDetailListByDate 실패:", err.message);
+      return [];
+    }
+  }
+
   async findLiveDates(channelPK) {
     const sql = `
             SELECT DISTINCT DATE(live_open_date) AS broadcast_date
