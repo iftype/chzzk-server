@@ -4,7 +4,7 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 
-import PostgreDB from "./config/postgreDB.js";
+import PostgreDB from "./config/PostgreDB.js";
 import PollingProcessor from "./pollings/PollingProcessor.js";
 import PollingScheduler from "./pollings/PollingScheduler.js";
 import ChannelController from "./controllers/ChannelController.js";
