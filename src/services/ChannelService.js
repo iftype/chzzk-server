@@ -1,5 +1,6 @@
 import getChzzkApiResponse from "../api/chzzk-Api.js";
 import ApiChannelDTO from "../dtos/api/ApiChannelDTO.js";
+import ChannelResponseDto from "../dtos/response/ChannelResponseDto.js";
 import Channel from "../models/Channel.js";
 
 class ChannelService {
@@ -13,8 +14,14 @@ class ChannelService {
     this.#channelPKCache = new Map();
   }
 
-  async getChannelAllData() {
-    return await this.#channelRepository.findAll();
+  async responseChannelAll() {
+    const channelModels = await this.#channelRepository.findAll();
+    return channelModels.map((channel) => new ChannelResponseDto(channel.toResponse()));
+  }
+
+  async responseChannel(streamerId) {
+    const channelModel = await this.#channelRepository.findByChannelId(streamerId);
+    return new ChannelResponseDto(channelModel.toResponse());
   }
 
   async getChannelData(channelId) {

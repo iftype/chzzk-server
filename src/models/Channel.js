@@ -36,5 +36,13 @@ class Channel {
       channelImageUrl: row.channel_image_url,
     });
   }
+
+  toResponse() {
+    return {
+      channelId: this.#channelId,
+      channelName: this.#channelName,
+      channelImageUrl: this.#channelImageUrl,
+    };
+  }
 }
 export default Channel;

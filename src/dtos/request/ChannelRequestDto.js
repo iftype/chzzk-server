@@ -7,7 +7,7 @@ class ChannelRequestDto {
   }
 
   get streamerId() {
-    return { streamerId: CHANNELS[this.channelName] };
+    return CHANNELS[this.channelName];
   }
 }
 export default ChannelRequestDto;

@@ -51,7 +51,6 @@ class ChannelRepository {
     const sql = `SELECT * FROM CHZZK_CHANNELS WHERE channel_id = $1 LIMIT 1`;
     try {
       const res = await this.pool.query(sql, [channelId]);
-      console.log(res.rows[0], !!res.rows[0]);
       return res.rows[0] ? Channel.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error(`[ChannelRepository] findByChannelId 실패: ${err.message}`);
