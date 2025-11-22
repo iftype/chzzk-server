@@ -7,23 +7,23 @@ class LiveLogDetail {
     this.logTime = data.log_time;
 
     this.channel = {
-      streamerId: data.streamer_id,
-      name: data.channel_name,
-      imageUrl: data.channel_image_url,
+      channelId: data.streamer_id,
+      channelName: data.channel_name,
+      channelImageUrl: data.channel_image_url,
     };
 
     this.video = {
-      no: data.video_no,
-      title: data.video_title,
-      thumbnailUrl: data.video_thumbnail_url,
-      duration: data.video_duration,
+      videoNo: data.video_no,
+      videoTitle: data.video_title,
+      videoThumbnailUrl: data.video_thumbnail_url,
+      videoDuration: data.video_duration,
     };
 
     this.category = {
       categoryId: data.category_id,
-      value: data.category_value,
-      type: data.category_type,
-      image: data.category_image_url,
+      categoryValue: data.category_value,
+      categoryType: data.category_type,
+      categoryImageUrl: data.category_image_url,
     };
   }
 

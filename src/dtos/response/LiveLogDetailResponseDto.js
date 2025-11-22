@@ -7,24 +7,23 @@ class LiveLogDetailResponseDto {
     this.closeDate = model.closeDate?.toISOString() || null;
 
     this.channel = {
-      id: model.channel.id,
-      streamerId: model.channel.streamerId,
-      name: model.channel.name,
-      imageUrl: model.channel.imageUrl,
+      channelId: model.channel.channelId,
+      channelName: model.channel.channelName,
+      channelImageUrl: model.channel.channelImageUrl,
     };
 
     this.video = {
-      no: model.video.no,
-      videoId: model.video.videoId,
-      title: model.video.title,
-      duration: model.video.duration,
+      videoNo: model.video.video_no,
+      videoTitle: model.video.videoTitle,
+      videoThumbnailUrl: model.video.videoThumbnailUrl,
+      videoDuration: model.video.videoDuration,
     };
 
     this.category = {
-      id: model.category.id,
-      value: model.category.value,
-      type: model.category.type,
-      image: model.category.image,
+      categoryId: model.category.categoryId,
+      categoryValue: model.category.categoryValue,
+      categoryType: model.category.categoryType,
+      categoryImageUrl: model.category.categoryImageUrl,
     };
   }
 }
