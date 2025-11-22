@@ -1,13 +1,12 @@
-import CHANNELS from "../../constants/channels.js";
 class ChannelRequestDto {
-  channelName;
+  #channelId;
 
   constructor(req) {
-    this.channelName = req.params.channelName?.toUpperCase() || null;
+    this.#channelId = req.params.channelId || null;
   }
 
-  get streamerId() {
-    return CHANNELS[this.channelName];
+  get channelId() {
+    return this.#channelId;
   }
 }
 export default ChannelRequestDto;

@@ -15,9 +15,9 @@ class ChannelController {
   // 채널 데이터 하나만 가져오기
   async getChannelData(req, res) {
     const reqDto = new ChannelRequestDto(req);
-    const { streamerId } = reqDto;
-    const resDto = await this.#channelService.responseChannel(streamerId);
-    res.status(200).json({ channel: streamerId, data: resDto });
+    const channelId = reqDto.channelId;
+    const resDto = await this.#channelService.responseChannel(channelId);
+    res.status(200).json({ channel: channelId, data: resDto });
   }
 }
 

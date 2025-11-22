@@ -164,7 +164,8 @@ export default class LiveLogRepository {
         G.id AS category_pk,
         G.category_id,
         G.category_value,
-        G.category_type
+        G.category_type,
+        G.category_image_url
     FROM
         CHZZK_LIVE_LOGS L
     INNER JOIN CHZZK_CHANNELS C ON L.channel_pk = C.id
@@ -210,7 +211,8 @@ export default class LiveLogRepository {
         G.id AS category_pk,
         G.category_id,
         G.category_value,
-        G.category_type
+        G.category_type,
+        G.category_image_url
     FROM
         CHZZK_LIVE_LOGS L
     INNER JOIN CHZZK_CHANNELS C ON L.channel_pk = C.id

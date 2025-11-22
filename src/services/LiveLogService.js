@@ -114,16 +114,16 @@ class LiveLogService {
     });
   }
 
-  async resposeLiveLog({ streamerId }) {
-    const { channelPK } = await this.#channelService.getChannelPK(streamerId);
+  async resposeLiveLog({ channelId }) {
+    const { channelPK } = await this.#channelService.getChannelPK(channelId);
     const logDetailList = await this.#liveLogRepository.findLogByPK({
       channelPK,
     });
     return logDetailList.map((log) => new LiveLogDetailResponseDto(log));
   }
 
-  async resposeLiveLogDetailByDate({ streamerId, date }) {
-    const { channelPK } = await this.#channelService.getChannelPK(streamerId);
+  async resposeLiveLogDetailByDate({ channelId, date }) {
+    const { channelPK } = await this.#channelService.getChannelPK(channelId);
     const logDetailList = await this.#liveLogRepository.findLogDetailListByDate({
       channelPK,
       date,

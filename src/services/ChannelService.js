@@ -19,8 +19,8 @@ class ChannelService {
     return channelModels.map((channel) => new ChannelResponseDto(channel.toResponse()));
   }
 
-  async responseChannel(streamerId) {
-    const channelModel = await this.#channelRepository.findByChannelId(streamerId);
+  async responseChannel(channelId) {
+    const channelModel = await this.#channelRepository.findByChannelId(channelId);
     return new ChannelResponseDto(channelModel.toResponse());
   }
 

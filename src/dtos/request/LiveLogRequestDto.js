@@ -1,19 +1,25 @@
-import CHANNELS from "../../constants/channels.js";
 class LiveLogRequestDto {
-  #channelName;
+  #channelId;
   #date;
 
   constructor(req) {
-    this.#channelName = req.params.channelName?.toUpperCase() || null;
+    this.#channelId = req.params.channelId;
     this.#date = req.query.date || null;
   }
 
-  get streamerId() {
-    return CHANNELS[this.#channelName];
+  get channelId() {
+    return this.#channelId;
   }
 
   get date() {
     return this.#date;
+  }
+
+  get LiveLogInfo() {
+    return {
+      channelId: this.#channelId,
+      date: this.#date,
+    };
   }
 }
 export default LiveLogRequestDto;

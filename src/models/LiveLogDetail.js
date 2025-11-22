@@ -27,6 +27,7 @@ class LiveLogDetail {
       categoryId: data.category_id,
       value: data.category_value,
       type: data.category_type,
+      image: data.category_image_url,
     };
   }
 

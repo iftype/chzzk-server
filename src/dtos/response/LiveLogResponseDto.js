@@ -24,6 +24,7 @@ class LiveLogDetailResponseDto {
       id: model.category.id,
       value: model.category.value,
       type: model.category.type,
+      image: model.category.image,
     };
   }
 }

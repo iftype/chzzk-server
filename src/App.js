@@ -44,13 +44,13 @@ class App {
 
     // 특정 채널 정보 가져오기
     this.app.get(
-      "/channel/:channelName",
+      "/channel/:channelId",
       this.channelController.getChannelData.bind(this.channelController)
     );
 
     // 특정 스트리머 기록 데이터 전부 가져오기
     this.app.get(
-      "/log/:channelName",
+      "/log/:channelId",
       this.liveLogController.getLiveLogs.bind(this.liveLogController)
     );
 
@@ -123,7 +123,7 @@ class App {
     this.#initializeRoutes();
     this.#initializeErrorHandler();
 
-    this.pollingSchedulerInstance.run();
+    // this.pollingSchedulerInstance.run();
 
     this.app.listen(this.PORT, () => {
       console.log(`Server running http://localhost:${this.PORT}`);
