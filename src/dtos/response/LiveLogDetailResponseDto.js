@@ -13,7 +13,7 @@ class LiveLogDetailResponseDto {
     };
 
     this.video = {
-      videoNo: model.video.video_no,
+      videoNo: model.video.videoNo,
       videoTitle: model.video.videoTitle,
       videoThumbnailUrl: model.video.videoThumbnailUrl,
       videoDuration: model.video.videoDuration,
