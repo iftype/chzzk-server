@@ -5,6 +5,7 @@ class LiveLogDetailResponseDto {
     this.title = model.title;
     this.openDate = model.openDate?.toISOString() || null;
     this.closeDate = model.closeDate?.toISOString() || null;
+    this.logTime = model.logTime?.toISOString() || null;
 
     this.channel = {
       channelId: model.channel.channelId,
