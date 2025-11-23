@@ -265,7 +265,7 @@ export default class LiveLogRepository {
     LEFT  JOIN CHZZK_CATEGORIES G ON L.category_pk = G.id
     WHERE
         L.channel_pk = $1
-    ORDER BY L.live_open_date DESC, L.log_time DESC
+    ORDER BY L.live_open_date DESC, L.log_time ASC
     `;
     const binds = [channelPK];
     try {
