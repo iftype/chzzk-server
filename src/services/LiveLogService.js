@@ -6,13 +6,15 @@ import LiveLogDetailResponseDto from "../dtos/response/LiveLogDetailResponseDto.
 import LiveLogRequestDto from "../dtos/request/LiveLogRequestDto.js";
 
 class LiveLogService {
-  #API_BASE_URL = process.env.API_BASE_URL;
+  #API_BASE_URL;
   #liveLogRepository;
   #channelService;
   #categoryService;
   #liveLogCache;
 
   constructor({ channelService, categoryService, liveLogRepository }) {
+    this.#API_BASE_URL = process.env.API_BASE_URL;
+
     this.#channelService = channelService;
     this.#categoryService = categoryService;
     this.#liveLogRepository = liveLogRepository;

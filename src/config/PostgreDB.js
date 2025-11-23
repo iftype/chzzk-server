@@ -1,8 +1,8 @@
 import pg from "pg";
 class PostgreDB {
-  pool;
+  #pool;
 
-  dbConfig = {
+  #dbConfig = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     host: process.env.DB_HOST,
@@ -15,8 +15,8 @@ class PostgreDB {
 
   async initialize() {
     try {
-      this.pool = new pg.Pool(this.dbConfig);
-      await this.pool.query("SELECT NOW()");
+      this.#pool = new pg.Pool(this.#dbConfig);
+      await this.#pool.query("SELECT NOW()");
       await this.#setupTable();
       return this.getPool();
     } catch (err) {
@@ -26,14 +26,14 @@ class PostgreDB {
   }
 
   async #setupTable() {
-    if (!this.pool) {
+    if (!this.#pool) {
       console.error("pool 이 생성되지않았음");
       return;
     }
 
     try {
       // 1. CHANNELS
-      await this.pool.query(`
+      await this.#pool.query(`
         CREATE TABLE IF NOT EXISTS CHZZK_CHANNELS (
           id SERIAL PRIMARY KEY,
           channel_id VARCHAR(100) NOT NULL UNIQUE,
@@ -45,7 +45,7 @@ class PostgreDB {
       `);
 
       // 2. CHZZK_CATEGORIES
-      await this.pool.query(`
+      await this.#pool.query(`
         CREATE TABLE IF NOT EXISTS CHZZK_CATEGORIES (
           id SERIAL PRIMARY KEY,
           category_id VARCHAR(100) UNIQUE NOT NULL,
@@ -57,7 +57,7 @@ class PostgreDB {
       `);
 
       // 3. VIDEOS
-      await this.pool.query(`
+      await this.#pool.query(`
         CREATE TABLE IF NOT EXISTS CHZZK_VIDEOS (
           id SERIAL PRIMARY KEY,
           video_no VARCHAR(100) NOT NULL UNIQUE,
@@ -71,7 +71,7 @@ class PostgreDB {
       `);
 
       // 4. CHZZK_LOGS
-      await this.pool.query(`
+      await this.#pool.query(`
         CREATE TABLE IF NOT EXISTS CHZZK_LIVE_LOGS (
           id SERIAL PRIMARY KEY,
           channel_pk INT REFERENCES CHZZK_CHANNELS(id),
@@ -92,12 +92,12 @@ class PostgreDB {
   }
 
   getPool() {
-    if (!this.pool) {
+    if (!this.#pool) {
       throw new Error(
         "DB 연결이 초기화되지 않았거나 실패했습니다. initialize()를 먼저 호출하세요."
       );
     }
-    return this.pool;
+    return this.#pool;
   }
 }
 export default PostgreDB;

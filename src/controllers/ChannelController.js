@@ -2,6 +2,7 @@ import ChannelRequestDto from "../dtos/request/ChannelRequestDto.js";
 
 class ChannelController {
   #channelService;
+
   constructor({ channelService }) {
     this.#channelService = channelService;
   }

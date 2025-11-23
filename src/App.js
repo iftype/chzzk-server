@@ -20,63 +20,50 @@ import CategoryRepository from "./repositories/CategoryRepository.js";
 import VideoRepository from "./repositories/VideoRepository.js";
 
 class App {
-  app;
-  PORT;
+  #app;
+  #PORT;
 
-  pollingSchedulerInstance;
+  #pollingSchedulerInstance;
 
-  liveLogController;
-  channelController;
+  #liveLogController;
+  #channelController;
 
   constructor() {
-    this.app = express();
-    this.PORT = process.env.PORT || 8080;
+    this.#app = express();
+    this.#PORT = process.env.PORT || 8080;
     this.#initializeMiddlewares();
   }
 
   #initializeMiddlewares() {
-    this.app.use(cors());
+    this.#app.use(cors());
   }
 
   #initializeRoutes() {
     // 채널 전부 가져오기
-    this.app.get("/channel", this.channelController.getChannelAllData.bind(this.channelController));
+    this.#app.get(
+      "/channel",
+      this.#channelController.getChannelAllData.bind(this.#channelController)
+    );
 
     // 특정 채널 정보 가져오기
-    this.app.get(
+    this.#app.get(
       "/channel/:channelId",
-      this.channelController.getChannelData.bind(this.channelController)
+      this.#channelController.getChannelData.bind(this.#channelController)
     );
 
     // 특정 스트리머 기록 데이터 전부 가져오기
-    this.app.get(
+    this.#app.get(
       "/log/:channelId",
-      this.liveLogController.getLiveLogs.bind(this.liveLogController)
+      this.#liveLogController.getLiveLogs.bind(this.#liveLogController)
     );
 
-    // 특정 스트리머 라이브 가져오기
-    // this.app.get(
-    //   "/live/:channelName/live",
-    //   this.liveLogController.getLastLiveBroadcast.bind(this.liveLogController)
-    // );
-
-    // // // 특정 스트리머 마지막 방송 가져오기
-    // this.app.get("/channels/:channelId/last-ended", this.controller.getLastEndedBroadcast);
-
-    // // 특정 스트리머의 카테고리들 가져오기
-    // this.app.get("/channels/:channelId/categories", this.controller.getCategories);
-    // // 특정 스트리머의 카테고리 리스트 가져오기
-    // this.app.get("/channels/:channelId/category/:categoryValue", this.controller.getCategoryLogs);
-    // // 특정 스트리머의 방송한 날짜 전부 가져오기
-    // this.app.get("/channels/:channelId/date", this.controller.getDateLogs);
-
-    this.app.get("/", (req, res) => {
+    this.#app.get("/", (req, res) => {
       res.send("서버 구동 중");
     });
   }
 
   #initializeErrorHandler() {
-    this.app.use((err, req, res, next) => {
+    this.#app.use((err, req, res, next) => {
       console.error("[Global Error]", err);
       const status = err.status || 500;
       const message = err.message || "서버 에러 발생";
@@ -106,15 +93,15 @@ class App {
       videoService,
     });
 
-    this.liveLogController = new LiveLogController({ liveLogService });
-    this.channelController = new ChannelController({ channelService });
+    this.#liveLogController = new LiveLogController({ liveLogService });
+    this.#channelController = new ChannelController({ channelService });
 
     const processor = new PollingProcessor({
       liveLogService,
       channelService,
       videoMatchingService,
     });
-    this.pollingSchedulerInstance = new PollingScheduler({ processor });
+    this.#pollingSchedulerInstance = new PollingScheduler({ processor });
   }
 
   async run() {
@@ -123,10 +110,10 @@ class App {
     this.#initializeRoutes();
     this.#initializeErrorHandler();
 
-    this.pollingSchedulerInstance.run();
+    this.#pollingSchedulerInstance.run();
 
-    this.app.listen(this.PORT, () => {
-      console.log(`Server running http://localhost:${this.PORT}`);
+    this.#app.listen(this.#PORT, () => {
+      console.log(`Server running http://localhost:${this.#PORT}`);
     });
   }
 }

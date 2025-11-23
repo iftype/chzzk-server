@@ -1,9 +1,9 @@
 import Video from "../models/Video.js";
 class VideoRepository {
-  pool;
+  #pool;
 
   constructor(pool) {
-    this.pool = pool;
+    this.#pool = pool;
   }
 
   async upsertVideo(video) {
@@ -30,7 +30,7 @@ class VideoRepository {
       dbData.video_duration,
     ];
     try {
-      const res = await this.pool.query(sql, binds);
+      const res = await this.#pool.query(sql, binds);
       return res.rows[0] ? Video.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error("[VideoRepository] upsertVideo 실패:", err.message);
@@ -41,7 +41,7 @@ class VideoRepository {
   async findByVideoId(videoId) {
     const sql = `SELECT * FROM CHZZK_VIDEOS WHERE video_no = $1 LIMIT 1`;
     try {
-      const res = await this.pool.query(sql, [videoId]);
+      const res = await this.#pool.query(sql, [videoId]);
       return res.rows[0] ? Video.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error(`[VideoRepository] findByVideoId 실패: ${err.message}`);
@@ -56,7 +56,7 @@ class VideoRepository {
             ORDER BY publish_date DESC
         `;
     try {
-      const res = await this.pool.query(sql, [channelPK]);
+      const res = await this.#pool.query(sql, [channelPK]);
       return res.rows.map((row) => Video.fromDBRow(row));
     } catch (err) {
       console.error("[VideoRepository] findAllByChannelPK 실패:", err.message);
@@ -67,7 +67,7 @@ class VideoRepository {
   async findByPK(videoPK) {
     const sql = `SELECT * FROM CHZZK_VIDEOS WHERE id = $1 LIMIT 1`;
     try {
-      const res = await this.pool.query(sql, [videoPK]);
+      const res = await this.#pool.query(sql, [videoPK]);
       return res.rows[0] ? Video.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error("[VideoRepository] findByPK 실패:", err.message);

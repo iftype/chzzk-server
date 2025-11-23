@@ -2,10 +2,10 @@ import LiveLog from "../models/LiveLog.js";
 import LiveLogDetail from "../models/LiveLogDetail.js";
 
 export default class LiveLogRepository {
-  pool;
+  #pool;
 
   constructor(pool) {
-    this.pool = pool;
+    this.#pool = pool;
   }
 
   async save(liveLog) {
@@ -26,7 +26,7 @@ export default class LiveLogRepository {
       dbData.category_pk,
     ];
     try {
-      const res = await this.pool.query(sql, binds);
+      const res = await this.#pool.query(sql, binds);
       return res.rows[0] ? LiveLog.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error("[LiveLogRepository] upsertLog 실패:", err.message);
@@ -45,7 +45,7 @@ export default class LiveLogRepository {
     const binds = [closeDate, liveSessionId];
 
     try {
-      const res = await this.pool.query(sql, binds);
+      const res = await this.#pool.query(sql, binds);
       return res.rows[0] ? LiveLog.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error("[LiveLogRepository] updateCloseDate 실패:", err.message);
@@ -64,7 +64,7 @@ export default class LiveLogRepository {
             LIMIT 1
         `;
     try {
-      const res = await this.pool.query(sql, [channelPK]);
+      const res = await this.#pool.query(sql, [channelPK]);
       return res.rows[0] ? LiveLog.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error("[LiveLogRepo] findLastLiveLog 실패:", err.message);
@@ -83,7 +83,7 @@ export default class LiveLogRepository {
     const binds = [channelPK, date];
 
     try {
-      const result = await this.pool.query(sql, binds);
+      const result = await this.#pool.query(sql, binds);
       return result.rows.map((row) => LiveLog.fromDBRow(row));
     } catch (err) {
       console.error("[LiveLogRepository] findByChannelAndDate 실패:", err.message);
@@ -102,7 +102,7 @@ export default class LiveLogRepository {
             LIMIT 1
         `;
     try {
-      const result = await this.pool.query(sql, [channelPK]);
+      const result = await this.#pool.query(sql, [channelPK]);
       return result.rows[0] ? LiveLog.fromDBRow(result.rows[0]) : null;
     } catch (err) {
       console.error("[LiveLogRepository] findLastClosedLiveLogEmptyVideo 실패:", err.message);
@@ -118,7 +118,7 @@ export default class LiveLogRepository {
                 live_session_id = $1;
         `;
     try {
-      const result = await this.pool.query(sql, [liveSessionId]);
+      const result = await this.#pool.query(sql, [liveSessionId]);
       return result.rows[0] ? LiveLog.fromDBRow(result.rows[0]) : null;
     } catch (err) {
       console.error("[LiveLogRepository] findLiveLogsBySessionId 실패:", err.message);
@@ -133,7 +133,7 @@ export default class LiveLogRepository {
             WHERE live_session_id = $2;
         `;
     try {
-      const result = await this.pool.query(sql, [videoPK, liveSessionId]);
+      const result = await this.#pool.query(sql, [videoPK, liveSessionId]);
       return result.rowCount || 0;
     } catch (err) {
       console.error("[LiveLogRepository] updateVideoIdBySessionId 실패:", err.message);
@@ -180,7 +180,7 @@ export default class LiveLogRepository {
     `;
     const binds = [channelPK, date];
     try {
-      const result = await this.pool.query(sql, binds);
+      const result = await this.#pool.query(sql, binds);
       return result.rows.map((row) => LiveLogDetail.fromDBRow(row));
     } catch (err) {
       console.error("[LiveLogRepository] findLogDetailListByDate 실패:", err.message);
@@ -225,7 +225,7 @@ export default class LiveLogRepository {
     `;
     const binds = [channelPK];
     try {
-      const result = await this.pool.query(sql, binds);
+      const result = await this.#pool.query(sql, binds);
       return result.rows.map((row) => LiveLogDetail.fromDBRow(row));
     } catch (err) {
       console.error("[LiveLogRepository] findLogDetailListByDate 실패:", err.message);
@@ -243,7 +243,7 @@ export default class LiveLogRepository {
     const binds = [channelPK];
 
     try {
-      const result = await this.pool.query(sql, binds);
+      const result = await this.#pool.query(sql, binds);
       return result.rows.map((row) => row.broadcast_date);
     } catch (err) {
       console.error("[LiveLogRepository] findBroadcastDates 실패:", err.message);
@@ -262,7 +262,7 @@ export default class LiveLogRepository {
     const binds = [channelPK, limit];
 
     try {
-      const result = await this.pool.query(sql, binds);
+      const result = await this.#pool.query(sql, binds);
       return result.rows.map((row) => row.broadcast_date);
     } catch (err) {
       console.error("[LiveLogRepository] findLastBroadcastDates 실패:", err.message);

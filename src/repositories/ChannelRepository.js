@@ -1,10 +1,10 @@
 import Channel from "../models/Channel.js";
 
 class ChannelRepository {
-  pool;
+  #pool;
 
   constructor(pool) {
-    this.pool = pool;
+    this.#pool = pool;
   }
 
   async upsertChannel(channel) {
@@ -28,7 +28,7 @@ class ChannelRepository {
     const binds = [dbData.channel_id, dbData.channel_name, dbData.channel_image_url];
 
     try {
-      const res = await this.pool.query(sql, binds);
+      const res = await this.#pool.query(sql, binds);
       return res.rows[0] ? Channel.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error("[ChannelRepository] upsertChannel 실패:", err.message);
@@ -39,7 +39,7 @@ class ChannelRepository {
   async findAll() {
     const sql = `SELECT * FROM CHZZK_CHANNELS`;
     try {
-      const res = await this.pool.query(sql);
+      const res = await this.#pool.query(sql);
       return res.rows.map((row) => Channel.fromDBRow(row));
     } catch (err) {
       console.error("[ChannelRepository] findAll 실패:", err.message);
@@ -50,7 +50,7 @@ class ChannelRepository {
   async findByChannelId(channelId) {
     const sql = `SELECT * FROM CHZZK_CHANNELS WHERE channel_id = $1 LIMIT 1`;
     try {
-      const res = await this.pool.query(sql, [channelId]);
+      const res = await this.#pool.query(sql, [channelId]);
       return res.rows[0] ? Channel.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error(`[ChannelRepository] findByChannelId 실패: ${err.message}`);
@@ -66,7 +66,7 @@ class ChannelRepository {
             LIMIT 1
         `;
     try {
-      const res = await this.pool.query(sql, [channelPK]);
+      const res = await this.#pool.query(sql, [channelPK]);
       return res.rows[0] ? Channel.fromDBRow(res.rows[0]) : null;
     } catch (err) {
       console.error("[ChannelRepository] findByPK 실패:", err.message);
