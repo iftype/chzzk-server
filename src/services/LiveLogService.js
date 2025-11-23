@@ -118,12 +118,11 @@ class LiveLogService {
 
   async resposeLiveLog({ channelId }) {
     const { channelPK } = await this.#channelService.getChannelPK(channelId);
-    const logDetailList = await this.#liveLogRepository.findLogByPK({
+    const logDetailList = await this.#liveLogRepository.findLogDetailAllByPK({
       channelPK,
     });
-
+    console.log(logDetailList);
     const responseDtoList = logDetailList.map((log) => new LiveLogDetailResponseDto(log));
-
     const groupedSessionsMap = new Map();
     responseDtoList.forEach((logDto) => {
       const sessionId = logDto.sessionId;
@@ -134,6 +133,7 @@ class LiveLogService {
     });
 
     const finalGroupedResult = Array.from(groupedSessionsMap.values());
+    console.log(finalGroupedResult);
     return finalGroupedResult;
   }
 

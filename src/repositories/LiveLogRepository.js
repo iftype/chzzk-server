@@ -227,7 +227,52 @@ export default class LiveLogRepository {
       const result = await this.#pool.query(sql, binds);
       return result.rows.map((row) => LiveLogDetail.fromDBRow(row));
     } catch (err) {
-      console.error("[LiveLogRepository] findLogDetailListByDate 실패:", err.message);
+      console.error("[LiveLogRepository] findLogByPK 실패:", err.message);
+      return [];
+    }
+  }
+
+  async findLogDetailAllByPK({ channelPK }) {
+    const sql = `
+    SELECT
+        L.id AS live_log_pk,
+        L.live_session_id,
+        L.live_title,
+        L.live_open_date,
+        L.live_close_date,
+        L.log_time,
+
+        C.id AS channel_pk,
+        C.channel_id AS streamer_id,
+        C.channel_name,
+        C.channel_image_url,
+
+        V.id AS video_pk,
+        V.video_no,
+        V.video_title,
+        V.video_thumbnail_url,
+        V.video_duration,
+
+        G.id AS category_pk,
+        G.category_id,
+        G.category_value,
+        G.category_type,
+        G.category_image_url
+    FROM
+        CHZZK_LIVE_LOGS L
+    INNER JOIN CHZZK_CHANNELS C ON L.channel_pk = C.id
+    LEFT  JOIN CHZZK_VIDEOS V ON L.video_pk = V.id
+    LEFT  JOIN CHZZK_CATEGORIES G ON L.category_pk = G.id
+    WHERE
+        L.channel_pk = $1
+    ORDER BY log_time ASC
+    `;
+    const binds = [channelPK];
+    try {
+      const result = await this.#pool.query(sql, binds);
+      return result.rows.map((row) => LiveLogDetail.fromDBRow(row));
+    } catch (err) {
+      console.error("[LiveLogRepository] findLogByPK 실패:", err.message);
       return [];
     }
   }
