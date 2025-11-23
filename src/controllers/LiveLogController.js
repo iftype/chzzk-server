@@ -1,8 +1,8 @@
 import LiveLogRequestDto from "../dtos/request/LiveLogRequestDto.js";
-import LiveLogError from "../errors/LiveLogError.js";
 
 class LiveLogController {
   #liveLogService;
+
   constructor({ liveLogService }) {
     this.#liveLogService = liveLogService;
   }
