@@ -59,7 +59,6 @@ export default class LiveLogRepository {
             FROM CHZZK_LIVE_LOGS
             WHERE channel_pk = $1
               AND video_pk IS NULL
-              AND live_close_date IS NULL
             ORDER BY log_time DESC
             LIMIT 1
         `;

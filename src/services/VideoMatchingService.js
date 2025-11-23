@@ -1,5 +1,5 @@
 class VideoMatchingService {
-  static VIEDO_MATCH_STAND = 10 * 60 * 60 * 1000;
+  static VIEDO_MATCH_STAND = 8 * 60 * 60 * 1000;
 
   #liveLogService;
   #videoService;
@@ -24,7 +24,6 @@ class VideoMatchingService {
     const matchedDate =
       new Date(publishDate).getTime() - new Date(close_date).getTime() <
       VideoMatchingService.VIEDO_MATCH_STAND;
-
     if (!matchedTitle || !matchedDate) {
       return { matched: false };
     }
