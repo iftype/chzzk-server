@@ -226,7 +226,6 @@ export default class LiveLogRepository {
     const binds = [channelPK];
     try {
       const result = await this.pool.query(sql, binds);
-      console.log(result.rows);
       return result.rows.map((row) => LiveLogDetail.fromDBRow(row));
     } catch (err) {
       console.error("[LiveLogRepository] findLogDetailListByDate 실패:", err.message);
